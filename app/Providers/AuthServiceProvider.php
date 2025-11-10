@@ -5,6 +5,8 @@ namespace App\Providers;
 use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Carbon\Carbon;
+use League\OAuth2\Server\ResponseTypes\BearerTokenResponse;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -27,5 +29,12 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Passport::routes();
+    }
+
+    public function register()
+    {
+        if (config("app.env") !== "production") {
+            error_reporting(E_ALL ^ E_DEPRECATED);
+        }
     }
 }

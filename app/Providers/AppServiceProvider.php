@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use League\OAuth2\Server\AuthorizationServer;
 
 class AppServiceProvider extends ServiceProvider
 {
