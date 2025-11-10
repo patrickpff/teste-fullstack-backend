@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use App\Entity;
 
 class EntityController extends Controller
@@ -31,7 +32,7 @@ class EntityController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'corporate_name'    => 'required|string|max:255',
             'trade_name'        => 'required|string|max:255',
             'cnpj'              => 'required|string|max:30',
@@ -40,7 +41,20 @@ class EntityController extends Controller
             'region_id'         => 'required|integer|exists:regions,id',
         ]);
 
-        $entity = Entity::create($validated);
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $entity = Entity::create($request->only([
+            'corporate_name',
+            'trade_name',
+            'cnpj',
+            'inauguration_date',
+            'active',
+            'region_id'
+        ]));
 
         return response()->json($entity, 201);
     }
@@ -69,9 +83,38 @@ class EntityController extends Controller
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
-        //
+        $request->merge(['id' => $id]);
+
+        $validator = Validator::make($request->all(), [
+            'id'                => 'required|integer|exists:entities,id',
+            'corporate_name'    => 'required|string|max:255',
+            'trade_name'        => 'required|string|max:255',
+            'cnpj'              => 'required|string|max:30',
+            'inauguration_date' => 'required|date',
+            'active'            => 'boolean',
+            'region_id'         => 'required|integer|exists:regions,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $entity = Entity::findOrFail($request['id']); // 404 if don't exists
+
+        $entity->update($request->only([
+            'corporate_name',
+            'trade_name',
+            'cnpj',
+            'inauguration_date',
+            'active',
+            'region_id',
+        ]));
+
+        return response()->json($entity, 200);
     }
 
     /**
@@ -83,8 +126,12 @@ class EntityController extends Controller
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(Request $request)
+    public function destroy($id)
     {
-        //
+        $entity = Entity::findOrFail($id); // 404 if don't exists
+
+        $entity->delete();
+
+        return response()->json(null, 204); // returns 204 no content
     }
 }

@@ -12,6 +12,9 @@ class Entity extends Model
         'corporate_name',
         'trade_name',
         'cnpj',
+        'inauguration_date',
+        'active',
+        'region_id'
     ];
 
     public function medicalSpecialties()

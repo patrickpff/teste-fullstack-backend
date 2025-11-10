@@ -23,7 +23,7 @@ Route::middleware('auth:api')->prefix('entities')->group(function () {
     Route::get('/', "EntityController@index");
     Route::post('/', "EntityController@store");
     Route::get('/{id}', "EntityController@show");
-    Route::patch('/{id}', "EntityController@update");
+    Route::match(['put', 'patch'], '/{id}', "EntityController@update");
     Route::delete('/{id}', "EntityController@destroy");
 });
 
