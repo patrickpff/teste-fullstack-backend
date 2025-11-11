@@ -17,7 +17,7 @@ class EntityController extends Controller
      */
     public function index()
     {
-        $entities = Entity::all();
+        $entities = Entity::with('region')->get();
 
         return response()->json($entities);
     }
