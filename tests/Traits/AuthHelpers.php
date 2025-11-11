@@ -10,7 +10,7 @@ trait AuthHelpers
     {
         $password = '53cr3t!';
 
-        if (!$userData) {
+        if ($userData) {
             // Create personalized fake user
             $user = factory(\App\User::class)->create([
                 'email' => $userData["email"],
@@ -20,7 +20,7 @@ trait AuthHelpers
         } else {
             // Create basic fake user
             $user = factory(\App\User::class)->create([
-                "email" => 'johndoe@example.com',
+                "email" => 'johndoe'.uniqid().'@example.com',
                 "password" => bcrypt($password)
             ]);
         }
@@ -31,6 +31,19 @@ trait AuthHelpers
         ];
     }
 
+    protected function postAuth($username, $password)
+    {
+        // call oauth/token endpoint
+        return $this->json("POST", "/oauth/token", [
+            "grant_type" => "password",
+            "client_id" => env("PASSWORD_CLIENT_ID"),
+            "client_secret" => env("PASSWORD_CLIENT_SECRET"),
+            "username" => $username,
+            "password" => $password,
+            'scope' => ''
+        ]);
+    }
+
     protected function generateTokensForUser($userData=null, $userTryingToLogIn=null)
     {
         $password = '53cr3t!';
@@ -39,18 +52,18 @@ trait AuthHelpers
         $user = $userData['user'];
         $password = $userData['password'];
 
-        // call oauth/token endpoint
-        $response = $this->json("POST", "/oauth/token", [
-            "grant_type" => "password",
-            "client_id" => env("PASSWORD_CLIENT_ID"),
-            "client_secret" => env("PASSWORD_CLIENT_SECRET"),
-            "username" => $userTryingToLogIn ? $userTryingToLogIn['email'] : $user->email,
-            "password" => $userTryingToLogIn ? $userTryingToLogIn['password'] : $password,
-            'scope' => ''
-        ]);
+        $response = $this->postAuth(
+            $userTryingToLogIn ? $userTryingToLogIn['email'] : $user->email,
+            $userTryingToLogIn ? $userTryingToLogIn['password'] : $password
+        );
+        print_r($userTryingToLogIn ? $userTryingToLogIn['email'] : $user->email);
+        print_r($userTryingToLogIn ? $userTryingToLogIn['password'] : $password);
 
         $authData = json_decode($response->getContent(), true);
 
-        return $authData;
+        return [
+            "tokens" => $authData,
+            "response" => $response
+        ];
     }
 }
