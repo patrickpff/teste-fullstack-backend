@@ -17,6 +17,7 @@ use App\Http\Controllers\RegionController;
 
 Route::prefix("auth")->group(function () {
     Route::post('/token', "AuthController@token");
+    Route::post('/refresh', "AuthController@refreshToken");
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
