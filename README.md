@@ -150,3 +150,6 @@ php artisan test
 ## 📄 License
 
 This project is part of a coding challenge and is shared for educational purposes.
+
+--- 
+Made with ❤️ to demonstrate secure fullstack development using Angular 17 and Laravel, with authentication handled exclusively through HTTP-only cookies.
