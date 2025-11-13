@@ -15,7 +15,7 @@ class RegionController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function index() {
-        $regions = Region::all();
+        $regions = Region::orderBy('name')->get();
 
         return response()->json($regions);
     }

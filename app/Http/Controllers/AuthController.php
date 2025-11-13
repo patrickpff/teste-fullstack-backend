@@ -108,4 +108,15 @@ class AuthController extends Controller
             ->withCookie($accessCookie)
             ->withCookie($refreshCookie);
     }
+
+    public function logout(Request $request)
+    {
+        $forgetAccess = cookie()->forget('access_token');
+        $forgetRefresh = cookie()->forget('refresh_token');
+
+        return response()
+                    ->json(['message' => 'Logged out'])
+                    ->withCookie($forgetAccess)
+                    ->withCookie($forgetRefresh);
+    }
 }

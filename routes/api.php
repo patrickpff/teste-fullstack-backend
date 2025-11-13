@@ -18,6 +18,7 @@ use App\Http\Controllers\RegionController;
 Route::prefix("auth")->group(function () {
     Route::post('/token', "AuthController@token");
     Route::post('/refresh', "AuthController@refreshToken");
+    Route::post('/logout', "AuthController@logout");
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -38,4 +39,8 @@ Route::middleware('auth:api')->prefix('medical-specialties')->group(function () 
 
 Route::middleware('auth:api')->prefix('regions')->group(function () {
     Route::get('/', "RegionController@index");
+});
+
+Route::middleware('auth:api')->get('/check-session', function () {
+    return response()->json(true);
 });
